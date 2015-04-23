@@ -21,7 +21,6 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -92,7 +91,6 @@ public class MainActivity extends ActionBarActivity {
 
     public class SendLoginRequest extends AsyncTask<String, Integer, Integer> {
         Integer status;
-        InputStream inputStream = null;
         @Override
         protected Integer doInBackground(String... params) {
             try {
@@ -101,7 +99,6 @@ public class MainActivity extends ActionBarActivity {
                 httpget.addHeader(BasicScheme.authenticate(new UsernamePasswordCredentials(params[0], params[1]),"UTF-8", false));
                 HttpResponse response = httpclient.execute(httpget);
                 status = response.getStatusLine().getStatusCode();
-              //  inputStream = response.getEntity().getContent();
             } catch (IOException e) {
                 e.printStackTrace();
             }
