@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="StartPageBackground">#373737</color>
+    <color name="StartPageTextFields">#E5E5E5</color>
+    <color name="StartPageButtonColor">#33B5E5</color>
+    <color name="white">#ffffff</color>
+</resources>
