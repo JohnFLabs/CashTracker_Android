@@ -101,7 +101,7 @@ public class MainActivity extends ActionBarActivity {
                 httpget.addHeader(BasicScheme.authenticate(new UsernamePasswordCredentials(params[0], params[1]),"UTF-8", false));
                 HttpResponse response = httpclient.execute(httpget);
                 status = response.getStatusLine().getStatusCode();
-                inputStream = response.getEntity().getContent();
+              //  inputStream = response.getEntity().getContent();
             } catch (IOException e) {
                 e.printStackTrace();
             }
