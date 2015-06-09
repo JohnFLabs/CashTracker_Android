@@ -4,4 +4,5 @@
     <color name="StartPageTextFields">#E5E5E5</color>
     <color name="StartPageButtonColor">#33B5E5</color>
     <color name="white">#ffffff</color>
+    <color name="buttons_color">#66AC54</color>
 </resources>

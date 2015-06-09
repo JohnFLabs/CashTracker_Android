@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,12 +16,29 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.io.StringReader;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 
 public class docs_page extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+
+    Document respxmldoc;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -37,6 +55,12 @@ public class docs_page extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_docs_page);
 
+        Bundle extras = getIntent().getExtras();
+        if(extras != null) {
+            String response = extras.getString("response");
+
+
+        }
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
@@ -47,6 +71,7 @@ public class docs_page extends ActionBarActivity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
+
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
@@ -56,8 +81,29 @@ public class docs_page extends ActionBarActivity
                 .commit();
     }
 
+
+
     public void onSectionAttached(int number) {
-        switch (number) {
+
+        if(respxmldoc != null){
+
+            NodeList nl = respxmldoc.getElementsByTagName("outline");
+            for (int i = 0; i < nl.getLength(); i++) {
+                NodeList entry = nl.item(i).getChildNodes();
+                for(int j = 0 ; j < entry.getLength(); j++){
+                    Element el = (Element) entry.item(j);
+                    String name = el.getAttribute("caption");
+                   // String cost = xmlparser.getValue(el, ""); // cost child value
+                   // String description = xmlparser.getValue(el, ""); // description child value
+                    mTitle = name;
+                }
+               /* Element e = (Element) nl.item(i);
+                String name = xmlparser.getValue(e, "entry"); // name child value
+                String cost = xmlparser.getValue(e, ""); // cost child value
+                String description = xmlparser.getValue(e, ""); // description child value*/
+            }
+        }
+        /*switch (number) {
             case 1:
                 mTitle = getString(R.string.title_section1);
                 break;
@@ -67,7 +113,7 @@ public class docs_page extends ActionBarActivity
             case 3:
                 mTitle = getString(R.string.title_section3);
                 break;
-        }
+        }*/
     }
 
     public void restoreActionBar() {
