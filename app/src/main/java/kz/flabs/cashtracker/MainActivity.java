@@ -180,7 +180,7 @@ public class MainActivity extends ActionBarActivity {
 
 
         protected void onPreExecute() {
-            // NOTE: You can call UI Element here.
+
 
             //Start Progress Dialog (Message)
 
@@ -201,17 +201,17 @@ public class MainActivity extends ActionBarActivity {
         // Call after onPreExecute method
         protected Void doInBackground(String... urls) {
 
-            /************ Make Post Call To Web Server ***********/
+
             BufferedReader reader=null;
 
             // Send data
             try
             {
 
-                // Defined URL  where to send data
+
                 URL url = new URL(urls[0]);
 
-                // Send POST data request
+
 
                 URLConnection conn = url.openConnection();
                 conn.setDoOutput(true);
@@ -219,7 +219,7 @@ public class MainActivity extends ActionBarActivity {
                 //wr.write( data );
                 wr.flush();
 
-                // Get the server response
+
 
                 reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 StringBuilder sb = new StringBuilder();
@@ -228,11 +228,11 @@ public class MainActivity extends ActionBarActivity {
                 // Read Server Response
                 while((line = reader.readLine()) != null)
                 {
-                    // Append server response in string
+
                     sb.append(line + " ");
                 }
 
-                // Append Server Response To Content String
+
                 Content = sb.toString();
             }
             catch(Exception ex)
@@ -255,9 +255,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
         protected void onPostExecute(Void unused) {
-            // NOTE: You can call UI Element here.
 
-            // Close progress dialog
             Dialog.dismiss();
 
             if (Error != null) {
@@ -266,7 +264,7 @@ public class MainActivity extends ActionBarActivity {
 
             } else {
 
-                // Show Response Json On Screen (activity)
+
                 // uiUpdate.setText( Content );
 
                 /****************** Start Parse Response JSON Data *************/
