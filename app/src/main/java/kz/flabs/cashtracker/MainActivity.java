@@ -15,6 +15,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -27,11 +34,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 
 
@@ -156,159 +159,46 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void testRestProvider(View view) {
-        String serverURL = "http://androidexample.com/media/webservice/JsonReturn.php";
-        //String serverURL = "http://172.16.250.9:38555/CashTracker/RestProvider/page/welcome";
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "http://172.16.250.9:38555/CashTracker/RestProvider/page/welcome";
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                // TODO Auto-generated method stub
+                 String testresp = "Response => "+response.toString();
+               android.util.Log.d("response", testresp);
+               // findViewById(R.id.progressBar1).setVisibility(View.GONE);
 
-        new LongOperation().execute(serverURL);
-    }
-
-    // Class with extends AsyncTask class
-
-    private class LongOperation  extends AsyncTask<String, Void, Void> {
-
-        // Required initialization
-
-        private final HttpClient Client = new DefaultHttpClient();
-        private String Content;
-        private String Error = null;
-        private ProgressDialog Dialog = new ProgressDialog(MainActivity.this);
-        String data ="";
-        //TextView uiUpdate = (TextView) findViewById(R.id.output);
-        // TextView jsonParsed = (TextView) findViewById(R.id.jsonParsed);
-        int sizeData = 0;
-        //EditText serverText = (EditText) findViewById(R.id.serverText);
-
-
-        protected void onPreExecute() {
-
-
-            //Start Progress Dialog (Message)
-
-             Dialog.setMessage("Please wait..");
-             Dialog.show();
-
-            try{
-                // Set Request parameter
-                data +="&" + URLEncoder.encode("data", "UTF-8") + "=";//+serverText.getText();
-
-            } catch (UnsupportedEncodingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-        }
-
-        // Call after onPreExecute method
-        protected Void doInBackground(String... urls) {
-
-
-            BufferedReader reader=null;
-
-            // Send data
-            try
-            {
-
-
-                URL url = new URL(urls[0]);
-
-
-
-                URLConnection conn = url.openConnection();
-                conn.setDoOutput(true);
-                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-                //wr.write( data );
-                wr.flush();
-
-
-
-                reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                StringBuilder sb = new StringBuilder();
-                String line = null;
-
-                // Read Server Response
-                while((line = reader.readLine()) != null)
-                {
-
-                    sb.append(line + " ");
-                }
-
-
-                Content = sb.toString();
-            }
-            catch(Exception ex)
-            {
-                Error = ex.getMessage();
-            }
-            finally
-            {
-                try
-                {
-
-                    reader.close();
-                }
-
-                catch(Exception ex) {}
-            }
-
-            /*****************************************************/
-            return null;
-        }
-
-        protected void onPostExecute(Void unused) {
-
-            Dialog.dismiss();
-
-            if (Error != null) {
-
-                // uiUpdate.setText("Output : "+Error);
-
-            } else {
-
-
-                // uiUpdate.setText( Content );
-
-                /****************** Start Parse Response JSON Data *************/
-
-                String OutputData = "";
-                JSONObject jsonResponse;
 
                 try {
+                    //JSONArray jsonMainNode = response.optJSONArray("includedPages");
+                    JSONArray jsonMainNode = response.optJSONArray("includedPages");
+                   // JSONArray jsonMainNode = jobject.optJSONArray("elements");
+                    android.util.Log.d("jsonResponse", response.toString());
+                    JSONObject includedPages = jsonMainNode.getJSONObject(0);
+                    JSONArray elements = includedPages.getJSONArray("elements");
 
-                    jsonResponse = new JSONObject(Content);
-
-                    JSONArray jsonMainNode = jsonResponse.optJSONArray("Android");
-                    android.util.Log.d("jsonResponse", jsonResponse.toString());
-                    /*********** Process each JSON Node ************/
-
-                    int lengthJsonArr = jsonMainNode.length();
-
-                    for(int i=0; i < lengthJsonArr; i++)
-                    {
-                        JSONObject jsonChildNode = jsonMainNode.getJSONObject(i);
-
-                        String name       = jsonChildNode.optString("name").toString();
-                        String number     = jsonChildNode.optString("number").toString();
-                        String date_added = jsonChildNode.optString("date_added").toString();
-
-
-                        OutputData += " Name           : "+ name +" " + "Number      : "+ number +" "
-                                + "Time                : "+ date_added +" "
-                                +"-------------------------------------------------- ";
-
-
+                    // int lengthelements = elements.length();
+                    int lengthJsonArr = elements.length();
+                    String OutputData ="";
+                    for(int i=0; i < lengthJsonArr; i++){
+                        JSONObject jsonChildNode = elements.getJSONObject(i);
+                        String name = jsonChildNode.optString("name").toString();
+                        String value = jsonChildNode.optString("value").toString();
+                        OutputData += "Name : "+ name + " , Value : "+ value +" ; ";
                     }
-
+                    showAlert(OutputData);
                     //jsonParsed.setText( OutputData );
-
-
                 } catch (JSONException e) {
-
                     e.printStackTrace();
                 }
-
-
             }
-        }
-
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // TODO Auto-generated method stub
+            }
+        });
+        queue.add(jsObjRequest);
     }
 }
