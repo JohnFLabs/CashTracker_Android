@@ -160,25 +160,22 @@ public class MainActivity extends ActionBarActivity {
 
     public void testRestProvider(View view) {
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "http://172.16.250.9:38555/CashTracker/RestProvider/page/welcome";
+        String url = "http://172.16.250.9:38555/CashTracker/RestProvider/get/welcome";
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
             @Override
-            public void onResponse(JSONObject response) {
+        public void onResponse(JSONObject response) {
                 // TODO Auto-generated method stub
-                 String testresp = "Response => "+response.toString();
+               String testresp = "Response => "+response.toString();
                android.util.Log.d("response", testresp);
                // findViewById(R.id.progressBar1).setVisibility(View.GONE);
 
-
                 try {
-                    //JSONArray jsonMainNode = response.optJSONArray("includedPages");
                     JSONArray jsonMainNode = response.optJSONArray("includedPages");
                    // JSONArray jsonMainNode = jobject.optJSONArray("elements");
                     android.util.Log.d("jsonResponse", response.toString());
                     JSONObject includedPages = jsonMainNode.getJSONObject(0);
                     JSONArray elements = includedPages.getJSONArray("elements");
-
-                    // int lengthelements = elements.length();
                     int lengthJsonArr = elements.length();
                     String OutputData ="";
                     for(int i=0; i < lengthJsonArr; i++){
