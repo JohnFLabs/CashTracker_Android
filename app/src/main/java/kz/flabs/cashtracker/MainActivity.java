@@ -27,8 +27,12 @@ import org.apache.http.HttpResponse;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -116,10 +120,21 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected HttpResponse doInBackground(String... params) {
             try {
-                HttpGet httpget = new HttpGet("http://172.16.250.64:38800/Workflow/Provider?type=page&id=taskforme&page=0&onlyxml");
+                HttpPost httppost = new HttpPost("http://172.16.250.9:38555/Administrator/rest/session");
                 HttpClient httpclient = new DefaultHttpClient();
-                httpget.addHeader(BasicScheme.authenticate(new UsernamePasswordCredentials(params[0], params[1]),"UTF-8", false));
-                response = httpclient.execute(httpget);
+                //httpget.addHeader(BasicScheme.authenticate(new UsernamePasswordCredentials(params[0], params[1]),"UTF-8", false));
+                httppost.setHeader("Accept", "application/json");
+                httppost.setHeader("Content-type", "application/json");
+                httppost.setHeader("X-Request-With", "XMLHttpRequest");
+                JSONObject auth = new JSONObject();
+                auth.put("login", params[0]);
+                auth.put("pwd", params[1]);
+                JSONObject authUser = new JSONObject();
+                authUser.put("authUser",auth);
+                StringEntity se = new StringEntity(authUser.toString());
+                se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+                httppost.setEntity(se);
+                response = httpclient.execute(httppost);
                 HttpEntity resEntityGet = response.getEntity();
 
                 if (resEntityGet != null) {
@@ -136,6 +151,8 @@ public class MainActivity extends ActionBarActivity {
                 }
 
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
 
