@@ -1,7 +1,6 @@
 package kz.flabs.cashtracker;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -11,6 +10,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,12 +24,9 @@ import com.android.volley.toolbox.Volley;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
@@ -37,9 +34,6 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.io.BufferedReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 
 import java.io.IOException;
@@ -50,7 +44,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        makeView();
     }
 
 
@@ -122,7 +116,6 @@ public class MainActivity extends ActionBarActivity {
             try {
                 HttpPost httppost = new HttpPost("http://172.16.250.9:38555/Administrator/rest/session");
                 HttpClient httpclient = new DefaultHttpClient();
-                //httpget.addHeader(BasicScheme.authenticate(new UsernamePasswordCredentials(params[0], params[1]),"UTF-8", false));
                 httppost.setHeader("Accept", "application/json");
                 httppost.setHeader("Content-type", "application/json");
                 httppost.setHeader("X-Request-With", "XMLHttpRequest");
@@ -175,9 +168,9 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    public void testRestProvider(View view) {
+    public void makeView() {
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "http://172.16.250.9:38555/CashTracker/RestProvider/get/welcome";
+        String url = "http://172.16.250.9:38555/CashTracker/rest/page/welcome";
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
             @Override
@@ -188,20 +181,35 @@ public class MainActivity extends ActionBarActivity {
                // findViewById(R.id.progressBar1).setVisibility(View.GONE);
 
                 try {
-                    JSONArray jsonMainNode = response.optJSONArray("includedPages");
+                    //JSONArray jsonMainNode = response.optJSONArray("_Page");
+                    JSONObject _Page = response.getJSONObject("_Page");
+                    JSONObject includedPages = _Page.getJSONArray("includedPages").getJSONObject(0);
+                    JSONObject captions = includedPages.getJSONObject("captions");
                    // JSONArray jsonMainNode = jobject.optJSONArray("elements");
-                    android.util.Log.d("jsonResponse", response.toString());
-                    JSONObject includedPages = jsonMainNode.getJSONObject(0);
-                    JSONArray elements = includedPages.getJSONArray("elements");
-                    int lengthJsonArr = elements.length();
-                    String OutputData ="";
-                    for(int i=0; i < lengthJsonArr; i++){
-                        JSONObject jsonChildNode = elements.getJSONObject(i);
-                        String name = jsonChildNode.optString("name").toString();
-                        String value = jsonChildNode.optString("value").toString();
-                        OutputData += "Name : "+ name + " , Value : "+ value +" ; ";
-                    }
-                    showAlert(OutputData);
+                    String login_button_caption = captions.getJSONArray("login_button").getString(0);
+                    String login_caption = captions.getJSONArray("login_login").getString(0);
+                    String pwd_caption = captions.getJSONArray("login_pwd").getString(0);
+                    String promo_caption = captions.getJSONArray("promo_line1").getString(0);
+
+
+                    setContentView(R.layout.activity_main);
+                    Button login_button = (Button)findViewById (R.id.loginbtn);
+                    login_button.setText(login_button_caption);
+
+                    EditText login_edittext = (EditText)findViewById (R.id.login);
+                    login_edittext.setHint(login_caption);
+
+                    EditText pwd_edittext = (EditText)findViewById (R.id.pwd);
+                    pwd_edittext.setHint(pwd_caption);
+
+                    TextView promo_textview = (TextView)findViewById (R.id.textView);
+                    promo_textview.setText(promo_caption);
+
+                    //JSONObject includedPages = jsonMainNode.getJSONObject(0);
+                    //JSONArray elements = includedPages.getJSONArray("elements");
+                  //  String logInCaption = elements.getJSONObject(0).toString();
+
+                   // showAlert(OutputData);
                     //jsonParsed.setText( OutputData );
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -214,5 +222,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
         queue.add(jsObjRequest);
+
+
     }
 }

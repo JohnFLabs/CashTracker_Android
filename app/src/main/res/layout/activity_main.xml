@@ -52,7 +52,7 @@
         android:layout_alignRight="@+id/pwd"
         android:layout_alignEnd="@+id/pwd" />
 
-    <Button
+    <!--<Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="test restprovider"
@@ -63,7 +63,7 @@
         android:layout_alignRight="@+id/loginbtn"
         android:layout_alignEnd="@+id/loginbtn"
         android:layout_alignLeft="@+id/loginbtn"
-        android:layout_alignStart="@+id/loginbtn" />
+        android:layout_alignStart="@+id/loginbtn" /><\-->
 
 
 
